@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>番茄钟</title>
+    <script type="module" src="/main.js" defer></script>
+  </head>
+
+  <body>
+    <main class="container">
+      <h1 class="title">🍅 番茄钟</h1>
+
+      <div class="phase-selector">
+        <button class="phase-btn active" data-phase="focus">专注</button>
+        <button class="phase-btn" data-phase="shortBreak">休息</button>
+        <button class="phase-btn" data-phase="longBreak">长休息</button>
+      </div>
+
+      <div class="time-display" id="time-display">25:00</div>
+
+      <div class="controls">
+        <button id="start-btn" class="primary">开始</button>
+        <button id="reset-btn">重置</button>
+      </div>
+
+      <p class="hint">双击桌面进入全屏 / 按空格键暂停或开始</p>
+    </main>
+  </body>
+</html>

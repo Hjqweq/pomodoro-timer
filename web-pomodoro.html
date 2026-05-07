@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🍅 番茄钟</title>
+    <style>
+      :root {
+        --focus-color: #f2a263;
+        --break-color: #7ae7c7;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: 'Segoe UI', system-ui, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #1a1d24 0%, #0d0f12 100%);
+        color: #e8eaef;
+        transition: background 0.3s ease;
+      }
+
+      body.focus-mode {
+        background: linear-gradient(135deg, #2a1a1a 0%, #1a0d0d 100%);
+      }
+
+      body.break-mode {
+        background: linear-gradient(135deg, #1a2a24 0%, #0d1a12 100%);
+      }
+
+      .container {
+        text-align: center;
+        padding: 2rem;
+        max-width: 450px;
+      }
+
+      .title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: #f2f4f8;
+      }
+
+      .phase-selector {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+        justify-content: center;
+      }
+
+      .phase-btn {
+        cursor: pointer;
+        border: 2px solid #3d4452;
+        background: rgba(47, 53, 66, 0.5);
+        color: #a8b0c0;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 25px;
+        transition: all 0.2s ease;
+      }
+
+      .phase-btn:hover {
+        background: rgba(47, 53, 66, 0.8);
+        color: #f2f4f8;
+      }
+
+      .phase-btn.active {
+        border-color: #7ae7c7;
+        color: #1a1d24;
+        background: #7ae7c7;
+      }
+
+      .time-display {
+        font-size: 7rem;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 0.1em;
+        color: #f2f4f8;
+        margin: 1.5rem 0 2.5rem;
+        text-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      }
+
+      .time-display.focus-mode {
+        color: var(--focus-color);
+      }
+
+      .time-display.break-mode {
+        color: var(--break-color);
+      }
+
+      .controls {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+      }
+
+      .btn {
+        cursor: pointer;
+        border: none;
+        padding: 1rem 2.5rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 12px;
+        transition: all 0.2s ease;
+      }
+
+      #start-btn {
+        background: linear-gradient(135deg, #7ae7c7 0%, #5bd1b3 100%);
+        color: #1a1d24;
+      }
+
+      #start-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(122, 231, 199, 0.3);
+      }
+
+      #start-btn.running {
+        background: linear-gradient(135deg, #f2a263 0%, #e89248 100%);
+        color: #fff;
+      }
+
+      #reset-btn {
+        background: rgba(47, 53, 66, 0.5);
+        color: #a8b0c0;
+        border: 1px solid #3d4452;
+      }
+
+      #reset-btn:hover {
+        background: rgba(61, 68, 82, 0.8);
+        color: #f2f4f8;
+      }
+
+      .hint {
+        margin-top: 2rem;
+        font-size: 0.9rem;
+        color: #6b7280;
+      }
+
+      .cycle-counter {
+        margin-top: 2rem;
+        font-size: 0.9rem;
+        color: #8b92a0;
+      }
+
+      /* 全屏样式 */
+      body.fullscreen .container,
+      body.fullscreen .phase-selector,
+      body.fullscreen .controls,
+      body.fullscreen .hint,
+      body.fullscreen .cycle-counter {
+        opacity: 0.1;
+        pointer-events: none;
+      }
+
+      body.fullscreen .time-display {
+        font-size: 14rem;
+        cursor: pointer;
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      body.fullscreen .time-display:hover {
+        opacity: 0.5;
+      }
+
+      /* 动画 */
+      @keyframes pulse {
+        0%, 100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.02);
+        }
+      }
+
+      .time-display.running {
+        animation: pulse 2s ease-in-out infinite;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h1 class="title">🍅 番茄钟</h1>
+
+      <div class="phase-selector">
+        <button class="phase-btn active" data-phase="focus">专注</button>
+        <button class="phase-btn" data-phase="shortBreak">休息</button>
+        <button class="phase-btn" data-phase="longBreak">长休息</button>
+      </div>
+
+      <div class="time-display" id="time-display">25:00</div>
+
+      <div class="controls">
+        <button class="btn" id="start-btn">开始</button>
+        <button class="btn" id="reset-btn">重置</button>
+      </div>
+
+      <p class="cycle-counter">今日专注轮次：<span id="cycle-count">0</span></p>
+
+      <p class="hint">
+        点击时间显示进入全屏模式 / 按空格键暂停或开始 / 按 M 键切换静音
+      </p>
+    </div>
+
+    <script src="web-pomodoro.js"></script>
+  </body>
+</html>
